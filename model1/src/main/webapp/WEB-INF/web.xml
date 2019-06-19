@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:web="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd" version="2.4">
+	<security-constraint>
+		<web-resource-collection>
+			<web-resource-name>all</web-resource-name>
+			<url-pattern>/*</url-pattern>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>HEAD</http-method>
+			<http-method>OPTIONS</http-method>
+			<http-method>TRACE</http-method>
+		</web-resource-collection>
+		<auth-constraint />
+	</security-constraint>
+
+
+	<filter>
+		<filter-name>LicenseAuthorityFilter</filter-name>
+		<filter-class>com.uinnova.product.vmdb.comm.license.LicenseAuthorityFilter</filter-class>
+		<init-param>
+			<!-- 不拦截的路径正则表达式, 多个值以分号[;]分隔 , 不需要包含Context-->
+			<param-name>ignore-filter-pattern</param-name>
+			<param-value>
+				**.glb;**.mp4;**.wav;**.js;**.css;**.jpg;**.gif;**.png;**.ico;**.swf;**.eot;**.svg;**.ttf;**.woff;**.woff2;**.txt;**.xml;**.json;**.css;**.js;/vmdb/system/license/license.html;/license/auth/queryLicenseAuthInfo;/license/auth/**;/navigationbar/projects;/sys/vframe/getAuthMenuTreeByRootModuCode;/integration/authority/getCurUser;/configuration/getConfiguration;/sso/client/oauth/ssoCallback;
+				/cmv/license/auth/queryLicenseAuthInfo;/cmv/license/auth/**;/cmv/navigationbar/projects;/cmv/sys/vframe/getAuthMenuTreeByRootModuCode;/cmv/integration/authority/getCurUser;/cmv/configuration/getConfiguration;/sso/client/oauth/ssoCallback;
+				/dmv/license/auth/queryLicenseAuthInfo;/dmv/license/auth/**;/dmv/navigationbar/projects;/dmv/sys/vframe/getAuthMenuTreeByRootModuCode;/dmv/integration/authority/getCurUser;/dmv/configuration/getConfiguration;/dmv/configuration/toLicenseRegister;
+				/dcv/license/auth/queryLicenseAuthInfo;/dcv/license/auth/**;/dcv/navigationbar/projects;/dcv/sys/vframe/getAuthMenuTreeByRootModuCode;/dcv/integration/authority/getCurUser;/dcv/configuration/getConfiguration;/dcv/configuration/toLicenseRegister;/gis/getTiles/**;
+				/cmv/sys/variable/queryVariableList;/cmv/sys/user/queryById;/cmv/configuration/queryBrowserUrl;/cmv/sys/vframe/getAllModuleAuthMenuTree;
+			</param-value>
+		</init-param>
+		<init-param>
+			<param-name>registerLicensePropertyName</param-name>
+			<param-value>project.license.register.url</param-value>
+		</init-param>
+		<init-param>
+		   <param-name>use-page-language</param-name>
+		   <param-value>true</param-value>
+		</init-param>
+		
+	</filter>
+	<filter-mapping>
+		<filter-name>LicenseAuthorityFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	
+	
+	<filter>
+		<filter-name>LoginValidateFilter</filter-name>
+		<filter-class>com.uinnova.product.vmdb.comm.integration.SsoLoginFilter</filter-class>
+		<!-- 验证优先级：ignore-filter-pattern>must-login-pattern>ignore-login-pattern -->
+		<init-param>
+			<!-- 不拦截的路径正则表达式, 多个值以分号[;]分隔 , 不需要包含Context-->
+			<param-name>ignore-filter-pattern</param-name>
+			<param-value>**.glb;**.mp4;**.wav;**.js;**.css;**.jpg;**.gif;**.png;**.ico;**.swf;**.eot;**.svg;**.ttf;**.woff;**.woff2;**.html;**.txt;**.xml;**.json</param-value>
+		</init-param>
+		<init-param>
+			<!-- 不需要验证用户登录的路径正则表达式, 多个值以分号[;]分隔 , 不需要包含Context -->
+			<param-name>ignore-login-pattern</param-name>
+			<param-value>
+				/index.html;/noauth.html;/sso/client/oauth/verifyLogin;/sso/client/oauth/notLogin;/sso/client/oauth/ssoCallback;/integration/authority/verifyLogin;/configuration/**;/integration/i18n/**;/integration/dispatch/jsp/**;/license/auth/registerLicenseByDb;
+				/cmv/integration/authority/verifyLogin;/cmv/configuration/**;/cmv/integration/i18n/**;/cmv/integration/dispatch/jsp/**;/cmv/license/auth/registerLicenseByDb;
+				/dmv/integration/authority/verifyLogin;/dmv/configuration/**;/dmv/integration/i18n/**;/dmv/integration/dispatch/jsp/**;/dmv/license/auth/registerLicenseByDb;
+				/dcv/integration/authority/verifyLogin;/dcv/configuration/**;/dcv/integration/i18n/**;/dcv/integration/dispatch/jsp/**;/dcv/license/auth/registerLicenseByDb;/dcv/log/**;
+				/dcv/autoTest/saveImg;/dcv/autoTest/compareBmpImg;/dcv/autoTest/getResultMsg;/dcv/websocket/actionApply;
+			</param-value>
+		</init-param>
+		<init-param>
+			<!-- 验证不通过时所跳向的页面 -->
+			<param-name>security-page-url</param-name>
+			<param-value>/integration/dispatch/jsp/index</param-value>
+		</init-param>
+		<init-param>
+			<!-- 如查reqest-header中有以下值, 则不跳转页面，而是在Response中写入RemoteResult对象, 多个值以分号[;]隔开-->
+			<param-name>result-request-header</param-name>
+			<param-value>x-requested-with=XMLHttpRequest;REQUEST_HEADER=binary-http-client-header</param-value>
+		</init-param>
+		<init-param>
+			<param-name>use-page-language</param-name>
+			<param-value>true</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>LoginValidateFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	
+
+	<servlet>
+		<servlet-name>spring</servlet-name>
+		<servlet-class>com.uinnova.product.vmdb.comm.license.LicenseAuthoritySsoOauthServlet</servlet-class>
+		<init-param>
+			<param-name>result-request-header</param-name>
+			<param-value>x-requested-with=XMLHttpRequest;REQUEST_HEADER=binary-http-client-header</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring</servlet-name>
+		<url-pattern>/dcv/resources/</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.glb</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.mp3</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.mp4</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.wav</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.css</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.js</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.ico</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.swf</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.gif</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.jpeg</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.bmp</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.jpg</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.png</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.htm</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.html</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.svg</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.ttf</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.woff</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.woff2</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.json</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.txt</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.json</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.map</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>default</servlet-name>
+		<url-pattern>*.xml</url-pattern>
+	</servlet-mapping>
+	
+	<session-config>
+		<!-- Session超时时间, 单位：分种 -->
+		<session-timeout>720</session-timeout>
+	</session-config>
+</web-app>
